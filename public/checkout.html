@@ -375,6 +375,10 @@ function submitOrder(e) {
   var deliveryTime= document.getElementById('fTime').value;
   var coupon      = document.getElementById('fCoupon').value.trim() || '';
 
+  // Iraqi phone validation: 07XXXXXXXX (10 digits, starts with 07)
+  var phoneClean = phone.replace(/\s/g, '');
+  var phoneValid = /^07[0-9]{8}$/.test(phoneClean);
+
   var missing = [];
   if (!name) missing.push('الاسم');
   if (!phone) missing.push('رقم الهاتف');
@@ -389,6 +393,14 @@ function submitOrder(e) {
     errEl.classList.add('show');
     return;
   }
+
+  if (!phoneValid) {
+    errEl.textContent = 'رقم الهاتف غير صحيح — يجب أن يبدأ بـ 07 ويتكون من 10 أرقام (مثال: 07701234567)';
+    errEl.classList.add('show');
+    document.getElementById('phoneWrap').classList.add('error');
+    return;
+  }
+  document.getElementById('phoneWrap').classList.remove('error');
 
   var subtotal = cart.reduce(function(s,i){return s+i.price*i.qty;},0);
   var discount = Math.round(subtotal * discountPct / 100);
