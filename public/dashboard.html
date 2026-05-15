@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الطلبات — زيت الفرس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green-dark:#2a5c2e;
+  --green-mid:#3d7a42;
+  --cream:#f5f0e8;
+  --text-dark:#1a1a1a;
+  --text-mid:#555;
+  --text-light:#888;
+  --white:#fff;
+  --red:#c0392b;
+  --bg:#f4f6f9;
+}
+html,body{height:100%}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text-dark);min-height:100vh}
+
+/* ── LOGIN ── */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:var(--white);border-radius:20px;padding:40px 32px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.1);text-align:center}
+.login-logo{height:56px;width:auto;object-fit:contain;margin-bottom:20px}
+.login-box h2{font-size:1.2rem;font-weight:800;margin-bottom:24px;color:var(--text-dark)}
+.login-input{width:100%;border:1.5px solid #e0e0e0;border-radius:10px;padding:12px 14px;font-family:'Cairo',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s;margin-bottom:12px;text-align:center;letter-spacing:2px}
+.login-input:focus{border-color:var(--green-dark)}
+.login-btn{width:100%;background:var(--green-dark);color:#fff;border:none;border-radius:10px;padding:13px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:background .2s}
+.login-btn:hover{background:var(--green-mid)}
+.login-err{color:var(--red);font-size:.88rem;margin-top:10px;display:none}
+.login-err.show{display:block}
+
+/* ── DASHBOARD ── */
+#dashboard{display:none;flex-direction:column;min-height:100vh}
+.dash-hdr{background:var(--green-dark);color:#fff;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+.dash-hdr h1{font-size:1rem;font-weight:800}
+.dash-logout{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:6px 14px;font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:background .2s}
+.dash-logout:hover{background:rgba(255,255,255,.25)}
+
+.dash-body{flex:1;padding:24px;max-width:1400px;margin:0 auto;width:100%}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+@media(max-width:700px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--white);border-radius:12px;padding:16px 20px;box-shadow:0 1px 6px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:4px}
+.stat-label{font-size:.78rem;color:var(--text-light);font-weight:600}
+.stat-val{font-size:1.6rem;font-weight:800;color:var(--text-dark)}
+
+/* Filter tabs */
+.filter-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.tab-btn{background:var(--white);border:1.5px solid #e0e0e0;border-radius:8px;padding:7px 16px;font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;color:var(--text-mid)}
+.tab-btn.active{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
+.tab-btn:hover:not(.active){background:var(--cream);border-color:var(--green-dark)}
+
+/* Table */
+.table-wrap{background:var(--white);border-radius:14px;box-shadow:0 1px 6px rgba(0,0,0,.06);overflow:hidden}
+.orders-table{width:100%;border-collapse:collapse;font-size:.84rem}
+.orders-table th{background:#f8f9fa;padding:12px 14px;text-align:right;font-weight:700;color:var(--text-mid);border-bottom:1px solid #e8eaed;white-space:nowrap}
+.orders-table td{padding:12px 14px;border-bottom:1px solid #f0f2f5;vertical-align:middle}
+.orders-table tr:last-child td{border-bottom:none}
+.orders-table tr.expandable{cursor:pointer}
+.orders-table tr.expandable:hover td{background:#fafbfc}
+.orders-table tr.detail-row td{background:#f8f9fa;padding:0}
+
+/* Status badge */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.74rem;font-weight:700;white-space:nowrap}
+.badge-new{background:#e8f0fe;color:#1a73e8}
+.badge-confirmed{background:#e6f4ea;color:#188038}
+.badge-shipping{background:#fef3e2;color:#e37400}
+.badge-delivered{background:#d4edda;color:#155724}
+.badge-cancelled{background:#fce8e6;color:var(--red)}
+
+/* Status update */
+.status-sel{border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-family:'Cairo',sans-serif;font-size:.78rem;background:#fff;cursor:pointer;outline:none;margin-left:6px}
+.save-btn{background:var(--green-dark);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:background .2s;white-space:nowrap}
+.save-btn:hover{background:var(--green-mid)}
+
+/* Detail row */
+.detail-inner{padding:14px 20px;border-top:1px solid #e8eaed}
+.detail-section{margin-bottom:10px}
+.detail-title{font-size:.8rem;font-weight:700;color:var(--text-light);margin-bottom:6px}
+.detail-items{list-style:none;display:flex;flex-direction:column;gap:4px}
+.detail-items li{font-size:.83rem;color:var(--text-dark)}
+.detail-addr{font-size:.83rem;color:var(--text-dark);line-height:1.7}
+
+/* Empty state */
+.empty-state{padding:60px 20px;text-align:center;color:var(--text-light);font-size:.95rem}
+
+/* Refresh indicator */
+.refresh-info{font-size:.78rem;color:var(--text-light);margin-bottom:12px;text-align:left}
+
+@media(max-width:860px){
+  .orders-table th:nth-child(5),.orders-table td:nth-child(5){display:none}
+  .orders-table th:nth-child(7),.orders-table td:nth-child(7){display:none}
+}
+@media(max-width:600px){
+  .orders-table th:nth-child(3),.orders-table td:nth-child(3){display:none}
+  .dash-body{padding:14px 10px}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <img class="login-logo" src="https://cdn.salla.sa/cdn-cgi/image/fit=scale-down,width=400,height=400,onerror=redirect,format=auto/dXPyo/csShZEuneT0qnlf2FOj0l0nQ07xPMxDDS7Owqxh3.png" alt="زيت الفرس">
+    <h2>لوحة إدارة الطلبات</h2>
+    <input class="login-input" type="password" id="pwInput" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">دخول</button>
+    <div class="login-err" id="loginErr">كلمة مرور خاطئة</div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="dashboard">
+  <div class="dash-hdr">
+    <h1>لوحة الطلبات — زيت الفرس</h1>
+    <button class="dash-logout" onclick="doLogout()">تسجيل الخروج</button>
+  </div>
+
+  <div class="dash-body">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">إجمالي الطلبات</div><div class="stat-val" id="statTotal">0</div></div>
+      <div class="stat-card"><div class="stat-label">جديد</div><div class="stat-val" id="statNew">0</div></div>
+      <div class="stat-card"><div class="stat-label">مؤكد</div><div class="stat-val" id="statConfirmed">0</div></div>
+      <div class="stat-card"><div class="stat-label">مُسلَّم</div><div class="stat-val" id="statDelivered">0</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="filter-tabs">
+      <button class="tab-btn active" onclick="setTab('all',this)">الكل</button>
+      <button class="tab-btn" onclick="setTab('new',this)">جديد</button>
+      <button class="tab-btn" onclick="setTab('confirmed',this)">مؤكد</button>
+      <button class="tab-btn" onclick="setTab('shipping',this)">قيد التوصيل</button>
+      <button class="tab-btn" onclick="setTab('delivered',this)">مُسلَّم</button>
+      <button class="tab-btn" onclick="setTab('cancelled',this)">ملغي</button>
+    </div>
+
+    <div class="refresh-info" id="refreshInfo">يتجدد تلقائياً كل 30 ثانية</div>
+
+    <div class="table-wrap">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>الاسم</th>
+            <th>الهاتف</th>
+            <th>المحافظة</th>
+            <th>الإجمالي</th>
+            <th>الحالة</th>
+            <th>الوقت</th>
+            <th>تحديث</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none">لا توجد طلبات</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var allOrders = [];
+var currentTab = 'all';
+var adminPw = '';
+var refreshTimer = null;
+
+var STATUS_LABELS = { new:'جديد', confirmed:'مؤكد', shipping:'قيد التوصيل', delivered:'مُسلَّم', cancelled:'ملغي' };
+var STATUS_BADGE  = { new:'badge-new', confirmed:'badge-confirmed', shipping:'badge-shipping', delivered:'badge-delivered', cancelled:'badge-cancelled' };
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
+function doLogin() {
+  var pw = document.getElementById('pwInput').value;
+  if (!pw) return;
+  fetch('/api/orders', { headers: { 'x-admin': pw } })
+  .then(function(r) {
+    if (r.status === 401) throw new Error('wrong');
+    return r.json();
+  })
+  .then(function(data) {
+    adminPw = pw;
+    sessionStorage.setItem('dash_pw', pw);
+    allOrders = data;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    renderDashboard();
+    startAutoRefresh();
+  })
+  .catch(function() {
+    document.getElementById('loginErr').classList.add('show');
+  });
+}
+
+function doLogout() {
+  sessionStorage.removeItem('dash_pw');
+  adminPw = '';
+  clearInterval(refreshTimer);
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('pwInput').value = '';
+  document.getElementById('loginErr').classList.remove('show');
+}
+
+// Auto-login if session saved
+(function() {
+  var saved = sessionStorage.getItem('dash_pw');
+  if (saved) {
+    document.getElementById('pwInput').value = saved;
+    doLogin();
+  }
+})();
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+function loadOrders() {
+  return fetch('/api/orders', { headers: { 'x-admin': adminPw } })
+    .then(function(r){ return r.json(); })
+    .then(function(data){ allOrders = data; renderDashboard(); })
+    .catch(function(){});
+}
+
+function startAutoRefresh() {
+  clearInterval(refreshTimer);
+  refreshTimer = setInterval(function() {
+    loadOrders();
+    var el = document.getElementById('refreshInfo');
+    if (el) {
+      var now = new Date();
+      el.textContent = 'آخر تحديث: ' + now.toLocaleTimeString('ar-IQ') + ' — يتجدد كل 30 ثانية';
+    }
+  }, 30000);
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+
+function setTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderTable();
+}
+
+function renderDashboard() {
+  // Stats
+  document.getElementById('statTotal').textContent = allOrders.length;
+  document.getElementById('statNew').textContent = allOrders.filter(function(o){return o.status==='new';}).length;
+  document.getElementById('statConfirmed').textContent = allOrders.filter(function(o){return o.status==='confirmed';}).length;
+  document.getElementById('statDelivered').textContent = allOrders.filter(function(o){return o.status==='delivered';}).length;
+  renderTable();
+}
+
+function renderTable() {
+  var filtered = currentTab === 'all' ? allOrders : allOrders.filter(function(o){ return o.status === currentTab; });
+  var tbody = document.getElementById('ordersBody');
+  var empty = document.getElementById('emptyState');
+
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map(function(order) {
+    var badge = STATUS_BADGE[order.status] || 'badge-new';
+    var label = STATUS_LABELS[order.status] || order.status;
+    var dt = new Date(order.createdAt);
+    var timeStr = dt.toLocaleDateString('ar-IQ') + ' ' + dt.toLocaleTimeString('ar-IQ', {hour:'2-digit',minute:'2-digit'});
+    return (
+      '<tr class="expandable" onclick="toggleDetail('+order.id+',this)">' +
+        '<td><b>#'+order.id+'</b></td>' +
+        '<td>'+escHtml(order.name)+'</td>' +
+        '<td dir="ltr">'+escHtml(order.phone)+'</td>' +
+        '<td>'+escHtml(order.governorate)+'</td>' +
+        '<td><b>'+order.total.toLocaleString()+' د.ع</b></td>' +
+        '<td><span class="badge '+badge+'">'+label+'</span></td>' +
+        '<td style="font-size:.75rem;color:var(--text-light)">'+timeStr+'</td>' +
+        '<td onclick="event.stopPropagation()">' +
+          '<select class="status-sel" id="sel-'+order.id+'">' +
+            Object.keys(STATUS_LABELS).map(function(k){
+              return '<option value="'+k+'"'+(order.status===k?' selected':'')+'>'+STATUS_LABELS[k]+'</option>';
+            }).join('') +
+          '</select>' +
+          '<button class="save-btn" onclick="updateStatus('+order.id+')">حفظ</button>' +
+        '</td>' +
+      '</tr>' +
+      '<tr class="detail-row" id="detail-'+order.id+'" style="display:none">' +
+        '<td colspan="8">' +
+          '<div class="detail-inner">' +
+            '<div class="detail-section">' +
+              '<div class="detail-title">المنتجات</div>' +
+              '<ul class="detail-items">' +
+                order.items.map(function(item){
+                  return '<li>• '+escHtml(item.name)+' × '+item.qty+' — '+(item.price*item.qty).toLocaleString()+' د.ع</li>';
+                }).join('') +
+              '</ul>' +
+            '</div>' +
+            '<div class="detail-section">' +
+              '<div class="detail-title">العنوان</div>' +
+              '<div class="detail-addr">'+
+                escHtml(order.governorate)+' — '+escHtml(order.address)+
+                (order.address2 ? ' — '+escHtml(order.address2) : '')+
+              '</div>' +
+            '</div>' +
+            '<div class="detail-section">' +
+              '<div class="detail-title">وقت التوصيل المفضل</div>' +
+              '<div class="detail-addr">'+escHtml(order.deliveryTime)+'</div>' +
+            '</div>' +
+          '</div>' +
+        '</td>' +
+      '</tr>'
+    );
+  }).join('');
+}
+
+function toggleDetail(id, row) {
+  var detailRow = document.getElementById('detail-'+id);
+  if (!detailRow) return;
+  var allDetails = document.querySelectorAll('.detail-row');
+  allDetails.forEach(function(r){
+    if (r !== detailRow) r.style.display = 'none';
+  });
+  detailRow.style.display = detailRow.style.display === 'none' ? '' : 'none';
+}
+
+function updateStatus(id) {
+  var sel = document.getElementById('sel-'+id);
+  if (!sel) return;
+  var status = sel.value;
+  fetch('/api/orders/'+id, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'x-admin': adminPw },
+    body: JSON.stringify({ status: status })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(updated) {
+    var idx = allOrders.findIndex(function(o){ return o.id === id; });
+    if (idx !== -1) allOrders[idx] = updated;
+    renderDashboard();
+  })
+  .catch(function(){ alert('حدث خطأ أثناء التحديث'); });
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
