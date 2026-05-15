@@ -58,6 +58,9 @@ function buildOrderMessage(order) {
     lines.push(`  • ${item.name} × ${item.qty} — ${(item.price * item.qty).toLocaleString()} د.ع`);
   }
   lines.push('');
+  if (order.coupon && order.discount) {
+    lines.push(`🏷️ كود خصم: ${order.coupon} (- ${order.discount.toLocaleString()} د.ع)`);
+  }
   lines.push(`💰 <b>الإجمالي: ${order.total.toLocaleString()} د.ع</b>`);
   lines.push('💳 الدفع عند التسليم');
   return lines.join('\n');
@@ -77,7 +80,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // POST /api/order — place new order
 app.post('/api/order', (req, res) => {
-  const { name, phone, governorate, address, address2, deliveryTime, items, total } = req.body;
+  const { name, phone, governorate, address, address2, deliveryTime, items, total, coupon, discount } = req.body;
   if (!name || !phone || !governorate || !address || !deliveryTime || !items || !Array.isArray(items) || !items.length) {
     return res.status(400).json({ success: false, error: 'بيانات الطلب غير مكتملة' });
   }
@@ -93,6 +96,8 @@ app.post('/api/order', (req, res) => {
     deliveryTime,
     items,
     total: Number(total) || 0,
+    coupon: coupon || '',
+    discount: Number(discount) || 0,
     status: 'new',
     createdAt: new Date().toISOString()
   };

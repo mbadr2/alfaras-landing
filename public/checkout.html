@@ -49,6 +49,7 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dar
 .form-input{border:1.5px solid var(--cream-dark);border-radius:10px;padding:11px 14px;font-family:'Cairo',sans-serif;font-size:.92rem;color:var(--text-dark);outline:none;transition:border-color .2s;background:#fff;width:100%}
 .form-input:focus{border-color:var(--green-dark)}
 .form-input.error{border-color:var(--red)}
+.form-input:disabled{background:var(--cream);color:var(--text-light);cursor:not-allowed}
 
 /* Phone input with prefix */
 .phone-wrap{display:flex;align-items:center;border:1.5px solid var(--cream-dark);border-radius:10px;overflow:hidden;background:#fff;transition:border-color .2s}
@@ -56,6 +57,15 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dar
 .phone-wrap.error{border-color:var(--red)}
 .phone-prefix{padding:11px 12px;font-size:.88rem;font-weight:700;color:var(--text-mid);background:var(--cream);white-space:nowrap;border-left:1.5px solid var(--cream-dark);flex-shrink:0}
 .phone-wrap input{border:none;outline:none;padding:11px 12px;font-family:'Cairo',sans-serif;font-size:.92rem;color:var(--text-dark);flex:1;min-width:0;background:transparent}
+
+/* Discount */
+.discount-wrap{display:flex;gap:10px;align-items:stretch}
+.discount-wrap .form-input{flex:1}
+.btn-coupon{background:var(--green-dark);color:#fff;border:none;border-radius:10px;padding:0 20px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0}
+.btn-coupon:hover{background:var(--green-mid)}
+.discount-msg{font-size:.82rem;font-weight:700;margin-top:6px;padding:6px 12px;border-radius:8px;display:none}
+.discount-msg.ok{background:#edf7ee;color:var(--green-dark);display:block}
+.discount-msg.fail{background:#fdf0ef;color:var(--red);display:block}
 
 /* Submit button */
 .btn-submit{width:100%;background:var(--green-dark);color:#fff;border:none;border-radius:12px;padding:16px;font-family:'Cairo',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;transition:background .2s;margin-top:8px}
@@ -79,9 +89,15 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dar
 .sum-item-price{font-size:.88rem;font-weight:800;color:var(--green-dark);flex-shrink:0}
 .sum-empty{text-align:center;padding:40px 20px;color:var(--text-light);font-size:.9rem}
 .sum-ftr{padding:16px 20px;border-top:2px solid var(--cream-dark)}
-.sum-total-row{display:flex;justify-content:space-between;align-items:center}
-.sum-total-label{font-size:.95rem;font-weight:700;color:var(--text-mid)}
-.sum-total-val{font-size:1.2rem;font-weight:800;color:var(--green-dark)}
+.sum-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.sum-total-label{font-size:.92rem;font-weight:700;color:var(--text-mid)}
+.sum-total-val{font-size:1rem;font-weight:800;color:var(--text-dark)}
+.sum-discount-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;display:none}
+.sum-discount-label{font-size:.88rem;font-weight:700;color:var(--green-dark)}
+.sum-discount-val{font-size:.95rem;font-weight:800;color:var(--green-dark)}
+.sum-final-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--cream-dark)}
+.sum-final-label{font-size:1rem;font-weight:800;color:var(--text-dark)}
+.sum-final-val{font-size:1.2rem;font-weight:800;color:var(--green-dark)}
 .sum-note{font-size:.78rem;color:var(--text-light);margin-top:8px;text-align:center}
 
 /* ── SUCCESS MODAL ── */
@@ -134,7 +150,7 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dar
 
       <div class="form-group">
         <label for="fGov">المحافظة</label>
-        <select class="form-input" id="fGov" required>
+        <select class="form-input" id="fGov" onchange="updateDistricts()" required>
           <option value="" disabled selected>اختر المحافظة</option>
           <option>بغداد</option>
           <option>البصرة</option>
@@ -158,13 +174,20 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dar
       </div>
 
       <div class="form-group">
-        <label for="fAddr">العنوان التفصيلي</label>
-        <input class="form-input" type="text" id="fAddr" placeholder="الحي، الشارع، رقم المنزل..." required>
+        <label for="fDistrict">المنطقة / الحي</label>
+        <select class="form-input" id="fDistrict" required disabled>
+          <option value="" disabled selected>اختر المحافظة أولاً</option>
+        </select>
       </div>
 
       <div class="form-group">
-        <label for="fAddr2">العنوان الثاني <span class="opt">(اختياري)</span></label>
-        <input class="form-input" type="text" id="fAddr2" placeholder="تفاصيل إضافية للعنوان...">
+        <label for="fAddr">العنوان التفصيلي</label>
+        <input class="form-input" type="text" id="fAddr" placeholder="الشارع، رقم المنزل، أقرب نقطة دالة..." required>
+      </div>
+
+      <div class="form-group">
+        <label for="fNotes">ملاحظات <span class="opt">(اختياري)</span></label>
+        <input class="form-input" type="text" id="fNotes" placeholder="أي تفاصيل إضافية للمندوب...">
       </div>
 
       <div class="form-group">
@@ -176,6 +199,16 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dar
           <option>مساءً (3-6)</option>
           <option>مساءً (6-9)</option>
         </select>
+      </div>
+
+      <!-- DISCOUNT CODE -->
+      <div class="form-group">
+        <label>كود الخصم <span class="opt">(اختياري)</span></label>
+        <div class="discount-wrap">
+          <input class="form-input" type="text" id="fCoupon" placeholder="أدخل كود الخصم">
+          <button type="button" class="btn-coupon" onclick="applyCoupon()">تطبيق</button>
+        </div>
+        <div class="discount-msg" id="discountMsg"></div>
       </div>
 
       <button class="btn-submit" type="submit" id="submitBtn">اشتري الآن — الدفع عند التسليم 💳</button>
@@ -190,8 +223,16 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dar
     </div>
     <div class="sum-ftr" id="sumFtr" style="display:none">
       <div class="sum-total-row">
-        <span class="sum-total-label">الإجمالي</span>
-        <span class="sum-total-val" id="sumTotal">0 د.ع</span>
+        <span class="sum-total-label">المجموع</span>
+        <span class="sum-total-val" id="sumSubtotal">0 د.ع</span>
+      </div>
+      <div class="sum-discount-row" id="sumDiscountRow">
+        <span class="sum-discount-label">خصم 25% (iraq25)</span>
+        <span class="sum-discount-val" id="sumDiscountVal">- 0 د.ع</span>
+      </div>
+      <div class="sum-final-row">
+        <span class="sum-final-label">الإجمالي</span>
+        <span class="sum-final-val" id="sumTotal">0 د.ع</span>
       </div>
       <div class="sum-note">🚚 التوصيل لجميع محافظات العراق<br>💳 الدفع عند الاستلام</div>
     </div>
@@ -212,20 +253,87 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dar
 </div>
 
 <script>
-// Load cart
+// ── Districts data ──────────────────────────────────────────────────────────
+var DISTRICTS = {
+  'بغداد': ['الكرخ','الرصافة','الكاظمية','الأعظمية','الكرادة','المنصور','الدورة','الشعب','الزعفرانية','مدينة الصدر','بغداد الجديدة','المشتل','الحرية','العطيفية','الشعلة','الغزالية','اليرموك','الجادرية','الأمين','الوشاش','البياع','الدولاب','السيدية','الشعلة','زيونة','النهروان','المحمودية','أبو غريب','الطارمية','الراشدية'],
+  'البصرة': ['العشار','التنومة','المعقل','الزبير','أبو الخصيب','الهارثة','شط العرب','القرنة','المدينة','الفاو','البريهة','السيبة','الدير','خور الزبير'],
+  'نينوى': ['الموصل','تلعفر','سنجار','الحمدانية','تلكيف','الشيخان','بعشيقة','زمار','ربيعة','بعاج','الحضر','مخمور'],
+  'أربيل': ['أربيل المركز','شقلاوة','سوران','مخمور','كويسنجق','ميرگة سور','چومان','هواير'],
+  'الأنبار': ['الرمادي','الفلوجة','القائم','حديثة','عانة','راوة','هيت','الرطبة','خان أبو سعد','البغدادي'],
+  'بابل': ['الحلة','المحاويل','المسيب','الهاشمية','الكفل','النيل','قضاء الهندية','المدحتية','الإسكندرية'],
+  'كربلاء': ['كربلاء المركز','الهندية','عين التمر'],
+  'النجف': ['النجف المركز','الكوفة','المناذرة','أبو صخير','الحيدرية'],
+  'القادسية': ['الديوانية','الشامية','عفك','السدير','نفر','الحمزة','المحمودية'],
+  'المثنى': ['السماوة','المجد','خضر','الرميثة','السلمان'],
+  'ذي قار': ['الناصرية','الرفاعي','الشطرة','الجبايش','الإصلاح','الفهود','النصر','الغراف','سوق الشيوخ'],
+  'ميسان': ['العمارة','قلعة صالح','المجر الكبير','علي الغربي','المشرح','الكحلاء','الميمونة','سيد نور'],
+  'واسط': ['الكوت','النعمانية','الحي','الزبيدية','بدرة','جصان','العزيزية','الشحيمية','الصويرة'],
+  'صلاح الدين': ['تكريت','بيجي','سامراء','بلد','الدور','الشرقاط','طوز خورماتو','الضلوعية','بلد روز'],
+  'كركوك': ['كركوك المركز','الحويجة','داقوق','دبس','الطوز'],
+  'ديالى': ['بعقوبة','المقدادية','خانقين','كفري','جلولاء','قزانية','السعدية','الخالص','مندلي'],
+  'السليمانية': ['السليمانية المركز','رانية','كفري','شهربازار','دوكان','بنجوين','حلبجة','پشدر','ميرگة سور'],
+  'دهوك': ['دهوك المركز','زاخو','العمادية','سميل','باتيفه','بردرش','فيشخابور']
+};
+
+// ── Discount ────────────────────────────────────────────────────────────────
+var COUPONS = { 'iraq25': 25 };
+var discountPct = 0;
+
+function applyCoupon() {
+  var code = document.getElementById('fCoupon').value.trim().toLowerCase();
+  var msg = document.getElementById('discountMsg');
+  msg.className = 'discount-msg';
+  if (COUPONS[code] !== undefined) {
+    discountPct = COUPONS[code];
+    msg.textContent = '✅ تم تطبيق خصم ' + discountPct + '%';
+    msg.classList.add('ok');
+  } else {
+    discountPct = 0;
+    msg.textContent = '❌ كود الخصم غير صحيح';
+    msg.classList.add('fail');
+  }
+  updateSummary();
+}
+
+// ── Districts ───────────────────────────────────────────────────────────────
+function updateDistricts() {
+  var gov = document.getElementById('fGov').value;
+  var sel = document.getElementById('fDistrict');
+  sel.innerHTML = '';
+  sel.disabled = false;
+  var districts = DISTRICTS[gov] || [];
+  var def = document.createElement('option');
+  def.value = ''; def.disabled = true; def.selected = true;
+  def.textContent = 'اختر المنطقة / الحي';
+  sel.appendChild(def);
+  districts.forEach(function(d) {
+    var opt = document.createElement('option');
+    opt.value = d; opt.textContent = d;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Cart & Summary ───────────────────────────────────────────────────────────
 var cart = JSON.parse(localStorage.getItem('alfaras_cart') || '[]');
 
-// Render summary
-(function() {
+function updateSummary() {
   var body = document.getElementById('sumBody');
   var ftr = document.getElementById('sumFtr');
+  var subtotalEl = document.getElementById('sumSubtotal');
   var totalEl = document.getElementById('sumTotal');
+  var discRow = document.getElementById('sumDiscountRow');
+  var discVal = document.getElementById('sumDiscountVal');
+
   if (!cart.length) {
     body.innerHTML = '<div class="sum-empty">السلة فارغة — <a href="/" style="color:var(--green-dark);font-weight:700">تسوق الآن</a></div>';
     document.getElementById('submitBtn').disabled = true;
     return;
   }
-  var total = cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+
+  var subtotal = cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var discount = Math.round(subtotal * discountPct / 100);
+  var total = subtotal - discount;
+
   body.innerHTML = cart.map(function(item){
     return '<div class="sum-item">' +
       (item.img ? '<img class="sum-item-img" src="'+item.img+'" alt="">' : '<div class="sum-item-img"></div>') +
@@ -236,27 +344,42 @@ var cart = JSON.parse(localStorage.getItem('alfaras_cart') || '[]');
       '<div class="sum-item-price">'+(item.price*item.qty).toLocaleString()+' د.ع</div>' +
     '</div>';
   }).join('');
-  if (ftr) ftr.style.display = '';
-  if (totalEl) totalEl.textContent = total.toLocaleString() + ' د.ع';
-})();
 
+  if (ftr) ftr.style.display = '';
+  if (subtotalEl) subtotalEl.textContent = subtotal.toLocaleString() + ' د.ع';
+
+  if (discountPct > 0) {
+    discRow.style.display = 'flex';
+    discVal.textContent = '- ' + discount.toLocaleString() + ' د.ع';
+  } else {
+    discRow.style.display = 'none';
+  }
+
+  if (totalEl) totalEl.textContent = total.toLocaleString() + ' د.ع';
+}
+
+updateSummary();
+
+// ── Submit ───────────────────────────────────────────────────────────────────
 function submitOrder(e) {
   e.preventDefault();
   var errEl = document.getElementById('formError');
   errEl.classList.remove('show');
 
-  var name = document.getElementById('fName').value.trim();
-  var phone = document.getElementById('fPhone').value.trim();
+  var name        = document.getElementById('fName').value.trim();
+  var phone       = document.getElementById('fPhone').value.trim();
   var governorate = document.getElementById('fGov').value;
-  var address = document.getElementById('fAddr').value.trim();
-  var address2 = document.getElementById('fAddr2').value.trim();
-  var deliveryTime = document.getElementById('fTime').value;
+  var district    = document.getElementById('fDistrict').value;
+  var address     = document.getElementById('fAddr').value.trim();
+  var notes       = document.getElementById('fNotes').value.trim();
+  var deliveryTime= document.getElementById('fTime').value;
+  var coupon      = document.getElementById('fCoupon').value.trim() || '';
 
-  // Validation
   var missing = [];
   if (!name) missing.push('الاسم');
   if (!phone) missing.push('رقم الهاتف');
   if (!governorate) missing.push('المحافظة');
+  if (!district) missing.push('المنطقة');
   if (!address) missing.push('العنوان');
   if (!deliveryTime) missing.push('وقت التوصيل');
   if (!cart.length) missing.push('السلة فارغة');
@@ -267,7 +390,10 @@ function submitOrder(e) {
     return;
   }
 
-  var total = cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var subtotal = cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var discount = Math.round(subtotal * discountPct / 100);
+  var total = subtotal - discount;
+
   var btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.textContent = 'جاري الإرسال...';
@@ -275,7 +401,18 @@ function submitOrder(e) {
   fetch('/api/order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, phone: '+964' + phone, governorate, address, address2, deliveryTime, items: cart, total })
+    body: JSON.stringify({
+      name,
+      phone: '+964' + phone,
+      governorate,
+      address: district + ' - ' + address,
+      address2: notes,
+      deliveryTime,
+      items: cart,
+      total,
+      coupon: coupon || undefined,
+      discount: discount || undefined
+    })
   })
   .then(function(r){ return r.json(); })
   .then(function(data) {
