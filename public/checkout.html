@@ -143,7 +143,7 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dar
           <label for="fPhone">رقم الهاتف</label>
           <div class="phone-wrap" id="phoneWrap">
             <span class="phone-prefix">🇮🇶 +964</span>
-            <input type="tel" id="fPhone" placeholder="07XXXXXXXX" required maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+            <input type="tel" id="fPhone" placeholder="07XXXXXXXX" required maxlength="11" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
           </div>
         </div>
       </div>
@@ -377,7 +377,7 @@ function submitOrder(e) {
 
   // Iraqi phone validation: 07XXXXXXXX (10 digits, starts with 07)
   var phoneClean = phone.replace(/\s/g, '');
-  var phoneValid = /^07[0-9]{8}$/.test(phoneClean);
+  var phoneValid = /^07[0-9]{9}$/.test(phoneClean);
 
   var missing = [];
   if (!name) missing.push('الاسم');
