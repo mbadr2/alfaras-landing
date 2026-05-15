@@ -85,7 +85,7 @@ app.post('/api/order', (req, res) => {
     return res.status(400).json({ success: false, error: 'بيانات الطلب غير مكتملة' });
   }
   const orders = loadOrders();
-  const orderId = orders.length ? Math.max(...orders.map(o => o.id)) + 1 : 1;
+  const orderId = orders.length ? Math.max(...orders.map(o => o.id)) + 1 : 4871;
   const order = {
     id: orderId,
     name,

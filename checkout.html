@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إتمام الطلب — زيت الفرس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green-dark:#2a5c2e;
+  --green-mid:#3d7a42;
+  --green-light:#5a9e5f;
+  --cream:#f5f0e8;
+  --cream-dark:#ede5d0;
+  --text-dark:#1a1a1a;
+  --text-mid:#555;
+  --text-light:#888;
+  --white:#fff;
+  --red:#c0392b;
+  --gold:#c9a84c;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--text-dark);min-height:100vh}
+
+/* ── TOP BAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--cream-dark);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.topbar-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.topbar-logo img{height:44px;width:auto;object-fit:contain}
+.topbar-back{color:var(--green-dark);font-size:.88rem;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:4px}
+.topbar-back:hover{text-decoration:underline}
+
+/* ── LAYOUT ── */
+.co-layout{max-width:1100px;margin:0 auto;padding:32px 20px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+@media(max-width:860px){.co-layout{grid-template-columns:1fr;padding:20px 16px}}
+
+/* ── FORM CARD ── */
+.co-card{background:var(--white);border-radius:16px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.co-card h2{font-size:1.25rem;font-weight:800;margin-bottom:24px;color:var(--text-dark);border-bottom:2px solid var(--cream-dark);padding-bottom:12px}
+
+/* ── FORM ── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:580px){.form-row{grid-template-columns:1fr}}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.form-group label{font-size:.88rem;font-weight:700;color:var(--text-mid)}
+.form-group label .opt{font-weight:400;color:var(--text-light);font-size:.8rem}
+.form-input{border:1.5px solid var(--cream-dark);border-radius:10px;padding:11px 14px;font-family:'Cairo',sans-serif;font-size:.92rem;color:var(--text-dark);outline:none;transition:border-color .2s;background:#fff;width:100%}
+.form-input:focus{border-color:var(--green-dark)}
+.form-input.error{border-color:var(--red)}
+.form-input:disabled{background:var(--cream);color:var(--text-light);cursor:not-allowed}
+
+/* Phone input with prefix */
+.phone-wrap{display:flex;align-items:center;border:1.5px solid var(--cream-dark);border-radius:10px;overflow:hidden;background:#fff;transition:border-color .2s}
+.phone-wrap:focus-within{border-color:var(--green-dark)}
+.phone-wrap.error{border-color:var(--red)}
+.phone-prefix{padding:11px 12px;font-size:.88rem;font-weight:700;color:var(--text-mid);background:var(--cream);white-space:nowrap;border-left:1.5px solid var(--cream-dark);flex-shrink:0}
+.phone-wrap input{border:none;outline:none;padding:11px 12px;font-family:'Cairo',sans-serif;font-size:.92rem;color:var(--text-dark);flex:1;min-width:0;background:transparent}
+
+/* Discount */
+.discount-wrap{display:flex;gap:10px;align-items:stretch}
+.discount-wrap .form-input{flex:1}
+.btn-coupon{background:var(--green-dark);color:#fff;border:none;border-radius:10px;padding:0 20px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0}
+.btn-coupon:hover{background:var(--green-mid)}
+.discount-msg{font-size:.82rem;font-weight:700;margin-top:6px;padding:6px 12px;border-radius:8px;display:none}
+.discount-msg.ok{background:#edf7ee;color:var(--green-dark);display:block}
+.discount-msg.fail{background:#fdf0ef;color:var(--red);display:block}
+
+/* Submit button */
+.btn-submit{width:100%;background:var(--green-dark);color:#fff;border:none;border-radius:12px;padding:16px;font-family:'Cairo',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;transition:background .2s;margin-top:8px}
+.btn-submit:hover{background:var(--green-mid)}
+.btn-submit:disabled{background:#ccc;cursor:default}
+
+/* Error message */
+.form-error{background:#fdf0ef;border:1px solid #f5c6c2;border-radius:8px;padding:12px 16px;color:var(--red);font-size:.88rem;font-weight:600;margin-bottom:16px;display:none}
+.form-error.show{display:block}
+
+/* ── CART SUMMARY ── */
+.co-summary{background:var(--white);border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:hidden;position:sticky;top:20px}
+.sum-hdr{background:var(--green-dark);color:#fff;padding:16px 20px;font-size:1rem;font-weight:800}
+.sum-body{padding:16px 20px}
+.sum-item{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--cream-dark)}
+.sum-item:last-child{border-bottom:none}
+.sum-item-img{width:50px;height:50px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--cream)}
+.sum-item-info{flex:1;min-width:0}
+.sum-item-name{font-size:.82rem;font-weight:700;color:var(--text-dark);line-height:1.3;margin-bottom:2px}
+.sum-item-qty{font-size:.78rem;color:var(--text-light)}
+.sum-item-price{font-size:.88rem;font-weight:800;color:var(--green-dark);flex-shrink:0}
+.sum-empty{text-align:center;padding:40px 20px;color:var(--text-light);font-size:.9rem}
+.sum-ftr{padding:16px 20px;border-top:2px solid var(--cream-dark)}
+.sum-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.sum-total-label{font-size:.92rem;font-weight:700;color:var(--text-mid)}
+.sum-total-val{font-size:1rem;font-weight:800;color:var(--text-dark)}
+.sum-discount-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;display:none}
+.sum-discount-label{font-size:.88rem;font-weight:700;color:var(--green-dark)}
+.sum-discount-val{font-size:.95rem;font-weight:800;color:var(--green-dark)}
+.sum-final-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--cream-dark)}
+.sum-final-label{font-size:1rem;font-weight:800;color:var(--text-dark)}
+.sum-final-val{font-size:1.2rem;font-weight:800;color:var(--green-dark)}
+.sum-note{font-size:.78rem;color:var(--text-light);margin-top:8px;text-align:center}
+
+/* ── SUCCESS MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-box{background:#fff;border-radius:20px;padding:40px 32px;max-width:420px;width:100%;text-align:center;transform:scale(.9);transition:transform .3s}
+.modal-overlay.open .modal-box{transform:scale(1)}
+.modal-check{width:72px;height:72px;border-radius:50%;background:var(--green-dark);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;color:#fff}
+.modal-title{font-size:1.3rem;font-weight:800;color:var(--text-dark);margin-bottom:12px}
+.modal-id{font-size:1rem;color:var(--text-mid);margin-bottom:6px}
+.modal-total{font-size:1.15rem;font-weight:800;color:var(--green-dark);margin-bottom:16px}
+.modal-note{font-size:.88rem;color:var(--text-mid);line-height:1.7;margin-bottom:24px}
+.modal-btn{background:var(--green-dark);color:#fff;border:none;border-radius:10px;padding:14px 32px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:background .2s}
+.modal-btn:hover{background:var(--green-mid)}
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ── -->
+<div class="topbar">
+  <a class="topbar-logo" href="/">
+    <img src="https://cdn.salla.sa/cdn-cgi/image/fit=scale-down,width=400,height=400,onerror=redirect,format=auto/dXPyo/csShZEuneT0qnlf2FOj0l0nQ07xPMxDDS7Owqxh3.png" alt="زيت الفرس">
+  </a>
+  <a class="topbar-back" href="/">← العودة للمتجر</a>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="co-layout">
+
+  <!-- ORDER FORM -->
+  <div class="co-card">
+    <h2>بيانات التوصيل</h2>
+    <div class="form-error" id="formError">يرجى ملء جميع الحقول المطلوبة</div>
+
+    <form id="orderForm" onsubmit="submitOrder(event)">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fName">الاسم الكامل</label>
+          <input class="form-input" type="text" id="fName" placeholder="أدخل اسمك الكامل" required>
+        </div>
+        <div class="form-group">
+          <label for="fPhone">رقم الهاتف</label>
+          <div class="phone-wrap" id="phoneWrap">
+            <span class="phone-prefix">🇮🇶 +964</span>
+            <input type="text" id="fPhone" placeholder="07XXXXXXXX" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="fGov">المحافظة</label>
+        <select class="form-input" id="fGov" onchange="updateDistricts()" required>
+          <option value="" disabled selected>اختر المحافظة</option>
+          <option>بغداد</option>
+          <option>البصرة</option>
+          <option>نينوى</option>
+          <option>أربيل</option>
+          <option>الأنبار</option>
+          <option>بابل</option>
+          <option>كربلاء</option>
+          <option>النجف</option>
+          <option>القادسية</option>
+          <option>المثنى</option>
+          <option>ذي قار</option>
+          <option>ميسان</option>
+          <option>واسط</option>
+          <option>صلاح الدين</option>
+          <option>كركوك</option>
+          <option>ديالى</option>
+          <option>السليمانية</option>
+          <option>دهوك</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="fDistrict">المنطقة / الحي</label>
+        <select class="form-input" id="fDistrict" required disabled>
+          <option value="" disabled selected>اختر المحافظة أولاً</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="fAddr">العنوان التفصيلي</label>
+        <input class="form-input" type="text" id="fAddr" placeholder="الشارع، رقم المنزل، أقرب نقطة دالة..." required>
+      </div>
+
+      <div class="form-group">
+        <label for="fNotes">ملاحظات <span class="opt">(اختياري)</span></label>
+        <input class="form-input" type="text" id="fNotes" placeholder="أي تفاصيل إضافية للمندوب...">
+      </div>
+
+      <div class="form-group">
+        <label for="fTime">وقت التوصيل المفضل</label>
+        <select class="form-input" id="fTime" required>
+          <option value="" disabled selected>اختر الوقت المناسب</option>
+          <option>صباحاً (9-12)</option>
+          <option>ظهراً (12-3)</option>
+          <option>مساءً (3-6)</option>
+          <option>مساءً (6-9)</option>
+        </select>
+      </div>
+
+      <!-- DISCOUNT CODE -->
+      <div class="form-group">
+        <label>كود الخصم <span class="opt">(اختياري)</span></label>
+        <div class="discount-wrap">
+          <input class="form-input" type="text" id="fCoupon" placeholder="أدخل كود الخصم">
+          <button type="button" class="btn-coupon" onclick="applyCoupon()">تطبيق</button>
+        </div>
+        <div class="discount-msg" id="discountMsg"></div>
+      </div>
+
+      <button class="btn-submit" type="submit" id="submitBtn">اشتري الآن — الدفع عند التسليم 💳</button>
+    </form>
+  </div>
+
+  <!-- CART SUMMARY -->
+  <div class="co-summary">
+    <div class="sum-hdr">ملخص الطلب</div>
+    <div class="sum-body" id="sumBody">
+      <div class="sum-empty">السلة فارغة</div>
+    </div>
+    <div class="sum-ftr" id="sumFtr" style="display:none">
+      <div class="sum-total-row">
+        <span class="sum-total-label">المجموع</span>
+        <span class="sum-total-val" id="sumSubtotal">0 د.ع</span>
+      </div>
+      <div class="sum-discount-row" id="sumDiscountRow">
+        <span class="sum-discount-label">خصم 25% (iraq25)</span>
+        <span class="sum-discount-val" id="sumDiscountVal">- 0 د.ع</span>
+      </div>
+      <div class="sum-final-row">
+        <span class="sum-final-label">الإجمالي</span>
+        <span class="sum-final-val" id="sumTotal">0 د.ع</span>
+      </div>
+      <div class="sum-note">🚚 التوصيل لجميع محافظات العراق<br>💳 الدفع عند الاستلام</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-box">
+    <div class="modal-check">✓</div>
+    <div class="modal-title">تم إتمام الطلب بنجاح! 🎉</div>
+    <div class="modal-id" id="modalOrderId">رقم الطلب: #—</div>
+    <div class="modal-total" id="modalOrderTotal">إجمالي المبلغ: — د.ع</div>
+    <div class="modal-note">سيتم التواصل معك قريباً لتأكيد الطلب<br>شكراً لثقتك بزيت الفرس ❤️</div>
+    <button class="modal-btn" onclick="window.location.href='/'">حسناً</button>
+  </div>
+</div>
+
+<script>
+// ── Districts data ──────────────────────────────────────────────────────────
+var DISTRICTS = {
+  'بغداد': ['الكرخ','الرصافة','الكاظمية','الأعظمية','الكرادة','المنصور','الدورة','الشعب','الزعفرانية','مدينة الصدر','بغداد الجديدة','المشتل','الحرية','العطيفية','الشعلة','الغزالية','اليرموك','الجادرية','الأمين','الوشاش','البياع','الدولاب','السيدية','الشعلة','زيونة','النهروان','المحمودية','أبو غريب','الطارمية','الراشدية'],
+  'البصرة': ['العشار','التنومة','المعقل','الزبير','أبو الخصيب','الهارثة','شط العرب','القرنة','المدينة','الفاو','البريهة','السيبة','الدير','خور الزبير'],
+  'نينوى': ['الموصل','تلعفر','سنجار','الحمدانية','تلكيف','الشيخان','بعشيقة','زمار','ربيعة','بعاج','الحضر','مخمور'],
+  'أربيل': ['أربيل المركز','شقلاوة','سوران','مخمور','كويسنجق','ميرگة سور','چومان','هواير'],
+  'الأنبار': ['الرمادي','الفلوجة','القائم','حديثة','عانة','راوة','هيت','الرطبة','خان أبو سعد','البغدادي'],
+  'بابل': ['الحلة','المحاويل','المسيب','الهاشمية','الكفل','النيل','قضاء الهندية','المدحتية','الإسكندرية'],
+  'كربلاء': ['كربلاء المركز','الهندية','عين التمر'],
+  'النجف': ['النجف المركز','الكوفة','المناذرة','أبو صخير','الحيدرية'],
+  'القادسية': ['الديوانية','الشامية','عفك','السدير','نفر','الحمزة','المحمودية'],
+  'المثنى': ['السماوة','المجد','خضر','الرميثة','السلمان'],
+  'ذي قار': ['الناصرية','الرفاعي','الشطرة','الجبايش','الإصلاح','الفهود','النصر','الغراف','سوق الشيوخ'],
+  'ميسان': ['العمارة','قلعة صالح','المجر الكبير','علي الغربي','المشرح','الكحلاء','الميمونة','سيد نور'],
+  'واسط': ['الكوت','النعمانية','الحي','الزبيدية','بدرة','جصان','العزيزية','الشحيمية','الصويرة'],
+  'صلاح الدين': ['تكريت','بيجي','سامراء','بلد','الدور','الشرقاط','طوز خورماتو','الضلوعية','بلد روز'],
+  'كركوك': ['كركوك المركز','الحويجة','داقوق','دبس','الطوز'],
+  'ديالى': ['بعقوبة','المقدادية','خانقين','كفري','جلولاء','قزانية','السعدية','الخالص','مندلي'],
+  'السليمانية': ['السليمانية المركز','رانية','كفري','شهربازار','دوكان','بنجوين','حلبجة','پشدر','ميرگة سور'],
+  'دهوك': ['دهوك المركز','زاخو','العمادية','سميل','باتيفه','بردرش','فيشخابور']
+};
+
+// ── Discount ────────────────────────────────────────────────────────────────
+var COUPONS = { 'iraq25': 25 };
+var discountPct = 0;
+
+function applyCoupon() {
+  var code = document.getElementById('fCoupon').value.trim().toLowerCase();
+  var msg = document.getElementById('discountMsg');
+  msg.className = 'discount-msg';
+  if (COUPONS[code] !== undefined) {
+    discountPct = COUPONS[code];
+    msg.textContent = '✅ تم تطبيق خصم ' + discountPct + '%';
+    msg.classList.add('ok');
+  } else {
+    discountPct = 0;
+    msg.textContent = '❌ كود الخصم غير صحيح';
+    msg.classList.add('fail');
+  }
+  updateSummary();
+}
+
+// ── Districts ───────────────────────────────────────────────────────────────
+function updateDistricts() {
+  var gov = document.getElementById('fGov').value;
+  var sel = document.getElementById('fDistrict');
+  sel.innerHTML = '';
+  sel.disabled = false;
+  var districts = DISTRICTS[gov] || [];
+  var def = document.createElement('option');
+  def.value = ''; def.disabled = true; def.selected = true;
+  def.textContent = 'اختر المنطقة / الحي';
+  sel.appendChild(def);
+  districts.forEach(function(d) {
+    var opt = document.createElement('option');
+    opt.value = d; opt.textContent = d;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Cart & Summary ───────────────────────────────────────────────────────────
+var cart = JSON.parse(localStorage.getItem('alfaras_cart') || '[]');
+
+function updateSummary() {
+  var body = document.getElementById('sumBody');
+  var ftr = document.getElementById('sumFtr');
+  var subtotalEl = document.getElementById('sumSubtotal');
+  var totalEl = document.getElementById('sumTotal');
+  var discRow = document.getElementById('sumDiscountRow');
+  var discVal = document.getElementById('sumDiscountVal');
+
+  if (!cart.length) {
+    body.innerHTML = '<div class="sum-empty">السلة فارغة — <a href="/" style="color:var(--green-dark);font-weight:700">تسوق الآن</a></div>';
+    document.getElementById('submitBtn').disabled = true;
+    return;
+  }
+
+  var subtotal = cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var discount = Math.round(subtotal * discountPct / 100);
+  var total = subtotal - discount;
+
+  body.innerHTML = cart.map(function(item){
+    return '<div class="sum-item">' +
+      (item.img ? '<img class="sum-item-img" src="'+item.img+'" alt="">' : '<div class="sum-item-img"></div>') +
+      '<div class="sum-item-info">' +
+        '<div class="sum-item-name">'+item.name+'</div>' +
+        '<div class="sum-item-qty">الكمية: '+item.qty+'</div>' +
+      '</div>' +
+      '<div class="sum-item-price">'+(item.price*item.qty).toLocaleString()+' د.ع</div>' +
+    '</div>';
+  }).join('');
+
+  if (ftr) ftr.style.display = '';
+  if (subtotalEl) subtotalEl.textContent = subtotal.toLocaleString() + ' د.ع';
+
+  if (discountPct > 0) {
+    discRow.style.display = 'flex';
+    discVal.textContent = '- ' + discount.toLocaleString() + ' د.ع';
+  } else {
+    discRow.style.display = 'none';
+  }
+
+  if (totalEl) totalEl.textContent = total.toLocaleString() + ' د.ع';
+}
+
+updateSummary();
+
+// ── Submit ───────────────────────────────────────────────────────────────────
+function submitOrder(e) {
+  e.preventDefault();
+  var errEl = document.getElementById('formError');
+  errEl.classList.remove('show');
+
+  var name        = document.getElementById('fName').value.trim();
+  var phone       = document.getElementById('fPhone').value.trim();
+  var governorate = document.getElementById('fGov').value;
+  var district    = document.getElementById('fDistrict').value;
+  var address     = document.getElementById('fAddr').value.trim();
+  var notes       = document.getElementById('fNotes').value.trim();
+  var deliveryTime= document.getElementById('fTime').value;
+  var coupon      = document.getElementById('fCoupon').value.trim() || '';
+
+  // Iraqi phone validation: 07XXXXXXXX (10 digits, starts with 07)
+  var phoneClean = phone.replace(/\s/g, '');
+  var phoneValid = /^07[0-9]{8}$/.test(phoneClean);
+
+  var missing = [];
+  if (!name) missing.push('الاسم');
+  if (!phone) missing.push('رقم الهاتف');
+  if (!governorate) missing.push('المحافظة');
+  if (!district) missing.push('المنطقة');
+  if (!address) missing.push('العنوان');
+  if (!deliveryTime) missing.push('وقت التوصيل');
+  if (!cart.length) missing.push('السلة فارغة');
+
+  if (missing.length) {
+    errEl.textContent = 'يرجى ملء الحقول المطلوبة: ' + missing.join('، ');
+    errEl.classList.add('show');
+    return;
+  }
+
+  if (!phoneValid) {
+    errEl.textContent = 'رقم الهاتف غير صحيح — يجب أن يبدأ بـ 07 ويتكون من 10 أرقام (مثال: 07701234567)';
+    errEl.classList.add('show');
+    document.getElementById('phoneWrap').classList.add('error');
+    return;
+  }
+  document.getElementById('phoneWrap').classList.remove('error');
+
+  var subtotal = cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var discount = Math.round(subtotal * discountPct / 100);
+  var total = subtotal - discount;
+
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'جاري الإرسال...';
+
+  fetch('/api/order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+      phone: '+964' + phone,
+      governorate,
+      address: district + ' - ' + address,
+      address2: notes,
+      deliveryTime,
+      items: cart,
+      total,
+      coupon: coupon || undefined,
+      discount: discount || undefined
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      localStorage.removeItem('alfaras_cart');
+      document.getElementById('modalOrderId').textContent = 'رقم الطلب: #' + data.orderId;
+      document.getElementById('modalOrderTotal').textContent = 'إجمالي المبلغ: ' + (data.total||total).toLocaleString() + ' د.ع';
+      document.getElementById('successModal').classList.add('open');
+    } else {
+      errEl.textContent = data.error || 'حدث خطأ، يرجى المحاولة مجدداً';
+      errEl.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'اشتري الآن — الدفع عند التسليم 💳';
+    }
+  })
+  .catch(function() {
+    errEl.textContent = 'تعذّر الاتصال بالخادم، يرجى المحاولة مجدداً';
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'اشتري الآن — الدفع عند التسليم 💳';
+  });
+}
+</script>
+</body>
+</html>
